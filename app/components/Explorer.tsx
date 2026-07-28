@@ -104,6 +104,11 @@ export function Explorer() {
       };
       if (!response.ok) throw new Error(payload.error || "Investigation failed.");
       setAnalysis(payload);
+      window.setTimeout(() => {
+        document
+          .getElementById("evidence-report")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Investigation failed.");
     } finally {
@@ -179,7 +184,7 @@ export function Explorer() {
         </div>
       </section>
 
-      {error && (
+      {error && !result && (
         <div className="error-banner" role="alert">
           <span>Analysis paused</span>
           {error}
@@ -304,6 +309,15 @@ export function Explorer() {
                     Reviews the default branch, releases, and high-signal file
                     changes in an adaptive pre-spike window.
                   </p>
+                  {error && (
+                    <div className="investigation-error" role="alert">
+                      <strong>Investigation stopped</strong>
+                      <span>{error}</span>
+                      <button type="button" onClick={investigate}>
+                        Try again
+                      </button>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="empty-state compact">
@@ -552,7 +566,7 @@ function AnalysisReport({
   episode: GrowthEpisode;
 }) {
   return (
-    <section className="report-section">
+    <section className="report-section" id="evidence-report">
       <div className="report-intro">
         <div>
           <p className="kicker">Evidence report</p>
@@ -720,7 +734,7 @@ const analysisSteps = [
   "Collecting Git history…",
   "Reviewing change clusters…",
   "Weighing evidence…",
-  "Writing the report…",
+  "Writing report… may take 30s",
 ];
 
 function formatCompact(value: number): string {

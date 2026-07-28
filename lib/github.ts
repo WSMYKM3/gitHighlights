@@ -9,7 +9,8 @@ import type {
 
 const GITHUB_API = "https://api.github.com";
 const OSS_INSIGHT_API = "https://api.ossinsight.io/v1";
-const MAX_COMMIT_DETAILS = 20;
+const MAX_COMMIT_DETAILS = 8;
+const MAX_COMMIT_EVIDENCE = 16;
 
 type GitHubRepoResponse = {
   id: number;
@@ -133,20 +134,23 @@ export async function analyzeGitWindow(
   const to = new Date(spikeEnd);
   to.setUTCDate(to.getUTCDate() + 3);
 
-  const commits = await fetchCommits(
-    repository.owner,
-    repository.name,
-    repository.defaultBranch,
-    from.toISOString(),
-    to.toISOString(),
-  );
-  const releases = await fetchReleases(repository.owner, repository.name);
+  const [commits, releases] = await Promise.all([
+    fetchCommits(
+      repository.owner,
+      repository.name,
+      repository.defaultBranch,
+      from.toISOString(),
+      to.toISOString(),
+    ),
+    fetchReleases(repository.owner, repository.name).catch(() => []),
+  ]);
   const nearbyReleases = releases.filter((release) => {
     const published = new Date(release.published_at ?? release.created_at);
     return published >= shiftDays(from, -60) && published <= to;
   });
 
-  const detailTargets = rankCommits(commits).slice(0, MAX_COMMIT_DETAILS);
+  const rankedCommits = rankCommits(commits).slice(0, MAX_COMMIT_EVIDENCE);
+  const detailTargets = rankedCommits.slice(0, MAX_COMMIT_DETAILS);
   const details = await Promise.all(
     detailTargets.map((commit) =>
       fetchCommitDetail(repository.owner, repository.name, commit.sha).catch(
@@ -155,9 +159,15 @@ export async function analyzeGitWindow(
     ),
   );
 
-  const commitEvidence = details
-    .filter((detail): detail is GitHubCommitDetail => detail !== null)
-    .map(toCommitEvidence);
+  const detailsBySha = new Map(
+    details
+      .filter((detail): detail is GitHubCommitDetail => detail !== null)
+      .map((detail) => [detail.sha, detail]),
+  );
+  const commitEvidence = rankedCommits.map((commit) => {
+    const detail = detailsBySha.get(commit.sha);
+    return detail ? toCommitEvidence(detail) : toCommitListEvidence(commit);
+  });
   const releaseEvidence = nearbyReleases.map(toReleaseEvidence);
   const evidence = [...releaseEvidence, ...commitEvidence].sort((a, b) =>
     b.date.localeCompare(a.date),
@@ -233,7 +243,7 @@ async function fetchCommits(
     sha: branch,
     since,
     until,
-    per_page: "100",
+    per_page: "50",
   });
   return githubFetch(`/repos/${owner}/${repo}/commits?${query.toString()}`);
 }
@@ -243,28 +253,57 @@ async function fetchCommitDetail(
   repo: string,
   sha: string,
 ): Promise<GitHubCommitDetail> {
-  return githubFetch(`/repos/${owner}/${repo}/commits/${sha}`);
+  return githubFetch(`/repos/${owner}/${repo}/commits/${sha}`, 10_000, false);
 }
 
 async function fetchReleases(
   owner: string,
   repo: string,
 ): Promise<GitHubRelease[]> {
-  return githubFetch(`/repos/${owner}/${repo}/releases?per_page=100`);
+  return githubFetch(`/repos/${owner}/${repo}/releases?per_page=20`, 5_000, false);
 }
 
-async function githubFetch<T>(path: string): Promise<T> {
+async function githubFetch<T>(
+  path: string,
+  timeoutMs = 12_000,
+  retry = true,
+): Promise<T> {
   const token = process.env.GITHUB_TOKEN;
-  const response = await fetch(`${GITHUB_API}${path}`, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2026-03-10",
-      "User-Agent": "GitHighlights/0.1",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    signal: AbortSignal.timeout(20_000),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${GITHUB_API}${path}`, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2026-03-10",
+        "User-Agent": "GitHighlights/0.1",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (error) {
+    if (retry) {
+      await delay(300);
+      return githubFetch(path, timeoutMs, false);
+    }
+    if (
+      error instanceof Error &&
+      (error.name === "TimeoutError" || /timeout|aborted/i.test(error.message))
+    ) {
+      throw new Error("GitHub took too long to answer. Please try again.");
+    }
+    throw error;
+  }
   if (!response.ok) {
+    if (response.status >= 500) {
+      if (retry) {
+        await response.body?.cancel();
+        await delay(300);
+        return githubFetch(path, timeoutMs, false);
+      }
+      throw new Error(
+        `GitHub is temporarily unavailable (${response.status}). Please try again.`,
+      );
+    }
     const rateRemaining = response.headers.get("x-ratelimit-remaining");
     if (response.status === 403 && rateRemaining === "0") {
       throw new Error("GitHub’s request limit was reached. Try again later.");
@@ -272,7 +311,7 @@ async function githubFetch<T>(path: string): Promise<T> {
     if (response.status === 404) {
       throw new Error("That public GitHub repository was not found.");
     }
-    const body = await response.text();
+    const body = (await response.text()).slice(0, 300);
     let detail = body;
     try {
       const parsed = JSON.parse(body) as { message?: string };
@@ -285,6 +324,10 @@ async function githubFetch<T>(path: string): Promise<T> {
     );
   }
   return response.json() as Promise<T>;
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function rankCommits(commits: GitHubCommitListItem[]): GitHubCommitListItem[] {
@@ -318,6 +361,21 @@ function toCommitEvidence(detail: GitHubCommitDetail): Evidence {
     deletions: detail.stats?.deletions ?? 0,
     files: files.slice(0, 12),
     categories,
+  };
+}
+
+function toCommitListEvidence(commit: GitHubCommitListItem): Evidence {
+  return {
+    id: `commit:${commit.sha}`,
+    kind: "commit",
+    title: firstLine(commit.commit.message),
+    url: commit.html_url,
+    date:
+      commit.commit.author?.date ??
+      commit.commit.committer?.date ??
+      new Date().toISOString(),
+    sha: commit.sha.slice(0, 7),
+    categories: categorize(commit.commit.message, []),
   };
 }
 
