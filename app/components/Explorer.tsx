@@ -244,7 +244,7 @@ export function Explorer() {
             </div>
           </div>
 
-          <div className="investigation-grid">
+          <div className="analysis-workbench">
             <section className="episode-panel">
               <div className="section-heading">
                 <div>
@@ -266,6 +266,7 @@ export function Explorer() {
                       onClick={() => {
                         setSelected(episode);
                         setAnalysis(null);
+                        setError("");
                       }}
                     />
                   ))}
@@ -282,66 +283,43 @@ export function Explorer() {
               )}
             </section>
 
-            <section className="selection-panel">
-              <div className="section-heading">
-                <div>
-                  <span className="section-index">03</span>
-                  <div>
-                    <p className="kicker">Git investigation</p>
-                    <h2>What changed?</h2>
-                  </div>
-                </div>
-              </div>
-
-              {selected ? (
-                <>
-                  <SelectedEpisode episode={selected} />
-                  <button
-                    className="investigate-button"
-                    type="button"
-                    onClick={() => void investigate()}
-                    disabled={analyzing}
-                  >
-                    <span>
-                      {analyzing
-                        ? analysisSteps[analysisStep]
-                        : analysis
-                          ? "Run investigation again"
-                          : "Investigate Git changes"}
-                    </span>
-                    <span aria-hidden="true">{analyzing ? "•••" : "→"}</span>
+            <section className="investigation-results-panel" aria-live="polite">
+              {analyzing && selected ? (
+                <AnalysisLoading
+                  episode={selected}
+                  message={analysisSteps[analysisStep]}
+                />
+              ) : error ? (
+                <div className="inline-investigation-error" role="alert">
+                  <span>Investigation stopped</span>
+                  <h2>The Git evidence could not be loaded.</h2>
+                  <p>{error}</p>
+                  <button type="button" onClick={() => void investigate()}>
+                    Try again
                   </button>
-                  <p className="method-note">
-                    Reviews the default branch, releases, and high-signal file
-                    changes in an adaptive pre-spike window.
-                  </p>
-                  {error && (
-                    <div className="investigation-error" role="alert">
-                      <strong>Investigation stopped</strong>
-                      <span>{error}</span>
-                      <button type="button" onClick={() => void investigate()}>
-                        Try again
-                      </button>
-                    </div>
-                  )}
-                </>
+                </div>
+              ) : analysis && selected ? (
+                <AnalysisReport
+                  analysis={analysis}
+                  repository={result.repository}
+                  episode={selected}
+                />
               ) : (
-                <div className="empty-state compact">
-                  <span>←</span>
-                  <h3>Select an episode</h3>
-                  <p>Choose a marked growth period to inspect its Git history.</p>
+                <div className="report-placeholder">
+                  <span className="report-placeholder-mark" aria-hidden="true">
+                    ↗
+                  </span>
+                  <p className="kicker">Git investigation</p>
+                  <h2>Investigate directly from the chart.</h2>
+                  <p>
+                    Hover over a blue growth band, then run its Git
+                    investigation. The evidence report will appear here beside
+                    the episode ranking.
+                  </p>
                 </div>
               )}
             </section>
           </div>
-
-          {analysis && (
-            <AnalysisReport
-              analysis={analysis}
-              repository={result.repository}
-              episode={selected!}
-            />
-          )}
         </section>
       )}
 
@@ -608,30 +586,26 @@ function EpisodeButton({
   );
 }
 
-function SelectedEpisode({ episode }: { episode: GrowthEpisode }) {
-  const acceleration =
-    episode.baseline > 0
-      ? Math.round(episode.peakDaily / episode.baseline)
-      : episode.peakDaily;
+function AnalysisLoading({
+  episode,
+  message,
+}: {
+  episode: GrowthEpisode;
+  message: string;
+}) {
   return (
-    <div className="selected-episode">
-      <div className="selected-date">
-        <span>Peak</span>
-        <strong>{formatDate(episode.peakDate)}</strong>
+    <div className="analysis-loading" role="status">
+      <div className="loading-orbit" aria-hidden="true">
+        <span />
+        <span />
       </div>
-      <div className="selected-metrics">
-        <div>
-          <span>Peak velocity</span>
-          <strong>+{formatCompact(episode.peakDaily)}/day</strong>
-        </div>
-        <div>
-          <span>Above baseline</span>
-          <strong>{formatCompact(episode.excessStars)} stars</strong>
-        </div>
-        <div>
-          <span>Acceleration</span>
-          <strong>{formatCompact(acceleration)}×</strong>
-        </div>
+      <div>
+        <p className="kicker">Git investigation · {formatDate(episode.peakDate)}</p>
+        <h2>{message}</h2>
+        <p>
+          Reviewing commits, releases, changed files, and timing around this
+          growth episode.
+        </p>
       </div>
     </div>
   );
