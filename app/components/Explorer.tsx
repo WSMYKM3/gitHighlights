@@ -84,8 +84,9 @@ export function Explorer() {
     await loadRepository(query);
   }
 
-  async function investigate() {
-    if (!result || !selected) return;
+  async function investigate(targetEpisode = selected) {
+    if (!result || !targetEpisode) return;
+    setSelected(targetEpisode);
     setAnalysisStep(0);
     setAnalyzing(true);
     setAnalysis(null);
@@ -96,7 +97,7 @@ export function Explorer() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           repository: result.repository.fullName,
-          episode: selected,
+          episode: targetEpisode,
         }),
       });
       const payload = (await response.json()) as AnalysisResult & {
@@ -217,13 +218,18 @@ export function Explorer() {
             </div>
 
             <GrowthChart
+              key={result.repository.id}
               history={result.history}
               episodes={result.episodes}
               selected={selected}
+              analyzing={analyzing}
+              analysisStep={analysisStep}
               onSelect={(episode) => {
                 setSelected(episode);
                 setAnalysis(null);
+                setError("");
               }}
+              onInvestigate={(episode) => void investigate(episode)}
             />
 
             <div className="chart-foot">
@@ -293,7 +299,7 @@ export function Explorer() {
                   <button
                     className="investigate-button"
                     type="button"
-                    onClick={investigate}
+                    onClick={() => void investigate()}
                     disabled={analyzing}
                   >
                     <span>
@@ -313,7 +319,7 @@ export function Explorer() {
                     <div className="investigation-error" role="alert">
                       <strong>Investigation stopped</strong>
                       <span>{error}</span>
-                      <button type="button" onClick={investigate}>
+                      <button type="button" onClick={() => void investigate()}>
                         Try again
                       </button>
                     </div>
@@ -395,13 +401,20 @@ function GrowthChart({
   history,
   episodes,
   selected,
+  analyzing,
+  analysisStep,
   onSelect,
+  onInvestigate,
 }: {
   history: StarPoint[];
   episodes: GrowthEpisode[];
   selected: GrowthEpisode | null;
+  analyzing: boolean;
+  analysisStep: number;
   onSelect: (episode: GrowthEpisode) => void;
+  onInvestigate: (episode: GrowthEpisode) => void;
 }) {
+  const [hovered, setHovered] = useState<GrowthEpisode | null>(null);
   const width = 1000;
   const height = 330;
   const top = 24;
@@ -428,9 +441,28 @@ function GrowthChart({
     .join(" ");
 
   const gridValues = [0, 0.25, 0.5, 0.75, 1];
+  const hoveredStartIndex = hovered
+    ? (dateIndex.get(hovered.start) ?? 0)
+    : 0;
+  const hoveredEndIndex = hovered
+    ? (dateIndex.get(hovered.end) ?? hoveredStartIndex)
+    : 0;
+  const hoveredCenter =
+    hovered === null
+      ? 0
+      : (xForIndex(hoveredStartIndex) + xForIndex(hoveredEndIndex)) / 2;
+  const hoveredPercent = (hoveredCenter / width) * 100;
+  const popoverEdge =
+    hoveredPercent < 18 ? "left-edge" : hoveredPercent > 82 ? "right-edge" : "";
 
   return (
-    <div className="chart-wrap">
+    <div
+      className="chart-wrap"
+      onMouseLeave={() => setHovered(null)}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setHovered(null);
+      }}
+    >
       <svg
         className="growth-chart"
         viewBox={`0 0 ${width} ${height}`}
@@ -460,6 +492,17 @@ function GrowthChart({
               key={episode.id}
               className={`episode-zone ${isSelected ? "selected" : ""}`}
               onClick={() => onSelect(episode)}
+              onMouseEnter={() => setHovered(episode)}
+              onFocus={() => setHovered(episode)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSelect(episode);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`${formatDate(episode.peakDate)} growth episode, ${formatCompact(episode.starsGained)} stars gained. Show Git investigation.`}
             >
               <rect
                 x={x}
@@ -487,6 +530,44 @@ function GrowthChart({
           r="5"
         />
       </svg>
+      {hovered && (
+        <aside
+          className={`chart-investigation-popover ${popoverEdge}`}
+          style={{ left: `${hoveredPercent}%` }}
+          aria-live="polite"
+        >
+          <span className="popover-kicker">Git investigation</span>
+          <strong className="popover-date">{formatDate(hovered.peakDate)}</strong>
+          <div className="popover-metrics">
+            <span>
+              <small>Stars gained</small>
+              <strong>+{formatCompact(hovered.starsGained)}</strong>
+            </span>
+            <span>
+              <small>Peak velocity</small>
+              <strong>+{formatCompact(hovered.peakDaily)}/day</strong>
+            </span>
+          </div>
+          <button
+            type="button"
+            disabled={analyzing}
+            onClick={() => {
+              onSelect(hovered);
+              onInvestigate(hovered);
+            }}
+          >
+            <span>
+              {analyzing
+                ? analysisSteps[analysisStep]
+                : "Investigate Git changes"}
+            </span>
+            <span aria-hidden="true">{analyzing ? "•••" : "→"}</span>
+          </button>
+          <small className="popover-note">
+            Reviews the 30 days leading into this episode.
+          </small>
+        </aside>
+      )}
     </div>
   );
 }

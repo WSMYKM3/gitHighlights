@@ -418,6 +418,7 @@ main {
 }
 
 .chart-wrap {
+  position: relative;
   margin: 30px -5px 4px;
 }
 
@@ -442,6 +443,7 @@ main {
 .star-area {
   fill: var(--coral);
   opacity: 0.04;
+  pointer-events: none;
 }
 
 .star-line {
@@ -451,6 +453,7 @@ main {
   stroke-linecap: round;
   stroke-linejoin: round;
   filter: drop-shadow(0 4px 6px rgb(255 91 69 / 0.14));
+  pointer-events: none;
 }
 
 .end-dot {
@@ -482,6 +485,133 @@ main {
 .episode-zone.selected line {
   stroke: var(--blue);
   stroke-width: 2;
+}
+
+.episode-zone:focus {
+  outline: none;
+}
+
+.episode-zone:focus rect {
+  fill: rgb(84 116 255 / 0.25);
+  stroke: var(--blue);
+  stroke-width: 2;
+}
+
+.chart-investigation-popover {
+  position: absolute;
+  z-index: 4;
+  top: 34px;
+  display: flex;
+  width: 292px;
+  flex-direction: column;
+  padding: 18px;
+  color: white;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 15px;
+  background: rgb(16 35 63 / 0.97);
+  box-shadow: 0 20px 50px rgb(16 35 63 / 0.24);
+  transform: translateX(-50%);
+  animation: chart-popover-in 140ms ease-out;
+}
+
+.chart-investigation-popover.left-edge {
+  transform: translateX(0);
+}
+
+.chart-investigation-popover.right-edge {
+  transform: translateX(-100%);
+}
+
+.popover-kicker {
+  margin-bottom: 7px;
+  color: var(--mint);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 8px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.popover-date {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.popover-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 15px 0;
+  padding: 12px 0;
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  border-bottom: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.popover-metrics > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.popover-metrics > span + span {
+  padding-left: 13px;
+  border-left: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.popover-metrics small,
+.popover-note {
+  color: #aeb9cb;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.popover-metrics strong {
+  color: white;
+  font-size: 13px;
+}
+
+.chart-investigation-popover > button {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 13px;
+  color: var(--ink);
+  border: 0;
+  border-radius: 9px;
+  background: var(--mint);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chart-investigation-popover > button:hover {
+  background: #a9e8d8;
+}
+
+.chart-investigation-popover > button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.popover-note {
+  margin-top: 9px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@keyframes chart-popover-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .chart-foot {
