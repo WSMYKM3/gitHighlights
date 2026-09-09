@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
@@ -21,6 +23,18 @@
 # misc
 .DS_Store
 *.pem
+*.log
+*.tsbuildinfo
+.eslintcache
+*.swp
+*.swo
+*~
+
+# editor and tool caches
+.idea/
+/.cache/
+/.vite/
+/.turbo/
 
 # debug
 npm-debug.log*
@@ -28,8 +42,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# local secrets and environment files
 .env*
+.dev.vars*
+!.env.example
+!.env.sample
+!.dev.vars.example
 
 # vercel
 .vercel
