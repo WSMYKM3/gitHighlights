@@ -1,5 +1,7 @@
 # GitHighlights
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 > Read the code behind the curve.
 
 GitHighlights is a public-repository intelligence tool that connects unusual
@@ -20,6 +22,8 @@ the episode you choose.
 - Detects growth episodes relative to each repository's own historical
   baseline.
 - Lets you select an episode directly from the chart or a ranked event list.
+- Switches the complete interface and generated analysis between English and
+  Simplified Chinese.
 - Reviews nearby commits, releases, changed files, and code churn.
 - Groups evidence into themes such as product capability, onboarding, API/CLI,
   architecture, performance, compatibility, documentation, distribution, and

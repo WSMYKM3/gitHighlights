@@ -105,6 +105,43 @@ main {
   letter-spacing: 0.07em;
 }
 
+.header-actions {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.language-switch {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 8px;
+  color: #9a9c9f;
+  border: 1px solid rgb(17 27 46 / 0.14);
+  border-radius: 999px;
+  background: rgb(255 253 249 / 0.65);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+}
+
+.language-switch button {
+  padding: 2px 4px;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.language-switch button.active {
+  color: var(--ink);
+}
+
+.language-switch button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
 .live-dot {
   width: 7px;
   height: 7px;

@@ -23,6 +23,152 @@ type RepositoryResult = {
   source: string;
 };
 
+type Locale = "en" | "zh";
+
+const copy = {
+  en: {
+    home: "GitHighlights home",
+    headerNote: "Public repository intelligence",
+    eyebrow: "Growth, meet Git",
+    heroLine: "Read the code",
+    heroEmphasis: "behind the curve.",
+    heroCopy:
+      "Find the moments a repository accelerated, then inspect what changed in its product, structure, documentation, and developer experience.",
+    repository: "GitHub repository",
+    tracing: "Tracing history…",
+    trace: "Trace growth",
+    examples: "Example repositories",
+    try: "Try",
+    analysisPaused: "Analysis paused",
+    trajectory: "Star trajectory",
+    growthEpisodes: "Growth episodes",
+    totalStars: "Total stars",
+    detectedEpisode: "Detected episode",
+    dailyHistory: "Daily history via",
+    refreshed: "refreshed",
+    chooseMoment: "Choose a moment",
+    episodes: "Episodes",
+    noAcceleration: "No clear acceleration found",
+    noAccelerationBody:
+      "This repository’s history does not contain a statistically strong growth episode under the current detector.",
+    investigationStopped: "Investigation stopped",
+    evidenceLoadFailed: "The Git evidence could not be loaded.",
+    tryAgain: "Try again",
+    gitInvestigation: "Git investigation",
+    investigateChart: "Investigate directly from the chart.",
+    investigateChartBody:
+      "Hover over a blue growth band, then run its Git investigation. The evidence report will appear here beside the episode ranking.",
+    principle: "Git evidence, not a causal claim.",
+    principleBody:
+      "GitHighlights explains what changed near growth. It can also conclude that the repository contains no meaningful explanation.",
+    footer: "Built for curious maintainers and open-source observers.",
+    noDescription: "No repository description provided.",
+    stars: "Stars",
+    forks: "Forks",
+    language: "Language",
+    lastPush: "Last push",
+    mixed: "Mixed",
+    starsGained: "Stars gained",
+    peakVelocity: "Peak velocity",
+    investigateChanges: "Investigate Git changes",
+    reviewWindow: "Reviews the 30 days leading into this episode.",
+    baseline: "baseline",
+    perDay: "/day",
+    investigationLoading:
+      "Reviewing commits, releases, changed files, and timing around this growth episode.",
+    evidenceReport: "Evidence report",
+    gitStory: "The Git story around",
+    structuredSynthesis: "Structured AI synthesis",
+    deterministicSynthesis: "Deterministic evidence synthesis",
+    commitsScanned: "commits scanned",
+    releases: "releases",
+    filesReviewed: "files reviewed",
+    lineMovement: "line movement",
+    sourceLedger: "Source ledger",
+    reviewedEvidence: "Reviewed Git evidence",
+    openRepository: "Open repository ↗",
+    noEvidence: "No high-signal Git evidence was found in this window.",
+    limit: "Limit",
+    confidence: "confidence",
+    followingCurve: "Following the curve",
+    reconstructing: "Reconstructing star velocity…",
+    resolving:
+      "Resolving the repository and normalizing its public event history.",
+    today: "today",
+    yesterday: "yesterday",
+    daysAgo: "d ago",
+  },
+  zh: {
+    home: "GitHighlights 首页",
+    headerNote: "公开仓库增长洞察",
+    eyebrow: "增长曲线，遇见 Git",
+    heroLine: "读懂曲线背后的",
+    heroEmphasis: "代码变化。",
+    heroCopy:
+      "找到仓库增长加速的关键时刻，并查看产品、架构、文档和开发者体验发生了哪些变化。",
+    repository: "GitHub 仓库",
+    tracing: "正在追踪历史…",
+    trace: "追踪增长",
+    examples: "示例仓库",
+    try: "试试",
+    analysisPaused: "分析已暂停",
+    trajectory: "Star 增长轨迹",
+    growthEpisodes: "增长事件",
+    totalStars: "Star 总数",
+    detectedEpisode: "检测到的事件",
+    dailyHistory: "每日历史数据来源",
+    refreshed: "更新时间",
+    chooseMoment: "选择一个时刻",
+    episodes: "增长事件",
+    noAcceleration: "未发现明显的增长加速",
+    noAccelerationBody: "当前检测器未在该仓库历史中发现统计显著的增长事件。",
+    investigationStopped: "调查已停止",
+    evidenceLoadFailed: "无法加载 Git 证据。",
+    tryAgain: "重试",
+    gitInvestigation: "Git 调查",
+    investigateChart: "从图表直接开始调查。",
+    investigateChartBody:
+      "将鼠标悬停在蓝色增长区间并启动 Git 调查，证据报告会显示在事件列表旁。",
+    principle: "呈现 Git 证据，而非因果断言。",
+    principleBody:
+      "GitHighlights 解释增长附近发生了什么变化，也会在缺少有效依据时明确说明。",
+    footer: "为好奇的维护者与开源观察者打造。",
+    noDescription: "该仓库没有提供描述。",
+    stars: "Stars",
+    forks: "Forks",
+    language: "语言",
+    lastPush: "最近推送",
+    mixed: "多语言",
+    starsGained: "新增 Stars",
+    peakVelocity: "峰值速度",
+    investigateChanges: "调查 Git 变化",
+    reviewWindow: "检查该增长事件发生前 30 天的变化。",
+    baseline: "基线",
+    perDay: "/天",
+    investigationLoading: "正在检查该增长事件附近的提交、发布、文件变化和时间关系。",
+    evidenceReport: "证据报告",
+    gitStory: "这个日期附近的 Git 故事",
+    structuredSynthesis: "结构化 AI 综合分析",
+    deterministicSynthesis: "确定性证据分析",
+    commitsScanned: "扫描的提交",
+    releases: "发布版本",
+    filesReviewed: "检查的文件",
+    lineMovement: "代码行变化",
+    sourceLedger: "来源清单",
+    reviewedEvidence: "已检查的 Git 证据",
+    openRepository: "打开仓库 ↗",
+    noEvidence: "该时间窗口内未发现高价值 Git 证据。",
+    limit: "局限",
+    confidence: "置信度",
+    followingCurve: "正在追踪曲线",
+    reconstructing: "正在重建 Star 增长速度…",
+    resolving: "正在解析仓库并标准化其公开事件历史。",
+    today: "今天",
+    yesterday: "昨天",
+    daysAgo: "天前",
+  },
+} as const;
+
 const exampleRepos = [
   "star-history/star-history",
   "openai/codex",
@@ -30,6 +176,7 @@ const exampleRepos = [
 ] as const;
 
 export function Explorer() {
+  const [locale, setLocale] = useState<Locale>("en");
   const [query, setQuery] = useState("star-history/star-history");
   const [result, setResult] = useState<RepositoryResult | null>(null);
   const [selected, setSelected] = useState<GrowthEpisode | null>(null);
@@ -38,6 +185,11 @@ export function Explorer() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(0);
   const [error, setError] = useState("");
+  const t = copy[locale];
+
+  useEffect(() => {
+    document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
+  }, [locale]);
 
   const loadRepository = useCallback(async (repository: string) => {
     setLoading(true);
@@ -84,6 +236,12 @@ export function Explorer() {
     await loadRepository(query);
   }
 
+  function changeLocale(nextLocale: Locale) {
+    if (nextLocale === locale) return;
+    setLocale(nextLocale);
+    if (analysis) setAnalysis(null);
+  }
+
   async function investigate(targetEpisode = selected) {
     if (!result || !targetEpisode) return;
     setSelected(targetEpisode);
@@ -98,6 +256,7 @@ export function Explorer() {
         body: JSON.stringify({
           repository: result.repository.fullName,
           episode: targetEpisode,
+          locale,
         }),
       });
       const payload = (await response.json()) as AnalysisResult & {
@@ -120,32 +279,52 @@ export function Explorer() {
   return (
     <main>
       <header className="site-header">
-        <a className="brand" href="#" aria-label="GitHighlights home">
+        <a className="brand" href="#" aria-label={t.home}>
           <span className="brand-mark" aria-hidden="true">
             GH
           </span>
           <span>GitHighlights</span>
         </a>
-        <div className="header-note">
-          <span className="live-dot" aria-hidden="true" />
-          Public repository intelligence
+        <div className="header-actions">
+          <div className="header-note">
+            <span className="live-dot" aria-hidden="true" />
+            {t.headerNote}
+          </div>
+          <div className="language-switch" aria-label="Language / 语言">
+            <button
+              type="button"
+              className={locale === "en" ? "active" : ""}
+              aria-pressed={locale === "en"}
+              disabled={analyzing}
+              onClick={() => changeLocale("en")}
+            >
+              EN
+            </button>
+            <span aria-hidden="true">/</span>
+            <button
+              type="button"
+              className={locale === "zh" ? "active" : ""}
+              aria-pressed={locale === "zh"}
+              disabled={analyzing}
+              onClick={() => changeLocale("zh")}
+            >
+              中文
+            </button>
+          </div>
         </div>
       </header>
 
       <section className="hero">
         <div className="eyebrow">
-          <span>Growth, meet Git</span>
+          <span>{t.eyebrow}</span>
           <span className="eyebrow-line" />
         </div>
         <h1>
-          Read the code
+          {t.heroLine}
           <br />
-          <em>behind the curve.</em>
+          <em>{t.heroEmphasis}</em>
         </h1>
-        <p className="hero-copy">
-          Find the moments a repository accelerated, then inspect what changed
-          in its product, structure, documentation, and developer experience.
-        </p>
+        <p className="hero-copy">{t.heroCopy}</p>
 
         <form className="repo-form" onSubmit={submit}>
           <div className="repo-input-wrap">
@@ -153,7 +332,7 @@ export function Explorer() {
               github.com/
             </span>
             <input
-              aria-label="GitHub repository"
+              aria-label={t.repository}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="owner/repository"
@@ -163,13 +342,13 @@ export function Explorer() {
             />
           </div>
           <button className="primary-button" type="submit" disabled={loading}>
-            {loading ? "Tracing history…" : "Trace growth"}
+            {loading ? t.tracing : t.trace}
             <span aria-hidden="true">↗</span>
           </button>
         </form>
 
-        <div className="examples" aria-label="Example repositories">
-          <span>Try</span>
+        <div className="examples" aria-label={t.examples}>
+          <span>{t.try}</span>
           {exampleRepos.map((repo) => (
             <button
               type="button"
@@ -187,32 +366,32 @@ export function Explorer() {
 
       {error && !result && (
         <div className="error-banner" role="alert">
-          <span>Analysis paused</span>
+          <span>{t.analysisPaused}</span>
           {error}
         </div>
       )}
 
-      {loading && !result && <LoadingPanel />}
+      {loading && !result && <LoadingPanel locale={locale} />}
 
       {result && (
         <section className="workspace" aria-live="polite">
-          <RepositoryHeader repository={result.repository} />
+          <RepositoryHeader repository={result.repository} locale={locale} />
 
           <div className="chart-card">
             <div className="section-heading chart-heading">
               <div>
                 <span className="section-index">01</span>
                 <div>
-                  <p className="kicker">Star trajectory</p>
-                  <h2>Growth episodes</h2>
+                  <p className="kicker">{t.trajectory}</p>
+                  <h2>{t.growthEpisodes}</h2>
                 </div>
               </div>
               <div className="chart-legend">
                 <span>
-                  <i className="legend-line" /> Total stars
+                  <i className="legend-line" /> {t.totalStars}
                 </span>
                 <span>
-                  <i className="legend-block" /> Detected episode
+                  <i className="legend-block" /> {t.detectedEpisode}
                 </span>
               </div>
             </div>
@@ -224,6 +403,7 @@ export function Explorer() {
               selected={selected}
               analyzing={analyzing}
               analysisStep={analysisStep}
+              locale={locale}
               onSelect={(episode) => {
                 setSelected(episode);
                 setAnalysis(null);
@@ -234,12 +414,12 @@ export function Explorer() {
 
             <div className="chart-foot">
               <span>
-                {formatDate(result.history[0]?.date)} —{" "}
-                {formatDate(result.history.at(-1)?.date)}
+                {formatDate(result.history[0]?.date, locale)} —{" "}
+                {formatDate(result.history.at(-1)?.date, locale)}
               </span>
               <span>
-                Daily history via {result.source} · refreshed{" "}
-                {formatTime(result.generatedAt)}
+                {t.dailyHistory} {result.source} · {t.refreshed}{" "}
+                {formatTime(result.generatedAt, locale)}
               </span>
             </div>
           </div>
@@ -250,8 +430,8 @@ export function Explorer() {
                 <div>
                   <span className="section-index">02</span>
                   <div>
-                    <p className="kicker">Choose a moment</p>
-                    <h2>Episodes</h2>
+                    <p className="kicker">{t.chooseMoment}</p>
+                    <h2>{t.episodes}</h2>
                   </div>
                 </div>
               </div>
@@ -263,6 +443,7 @@ export function Explorer() {
                       episode={episode}
                       index={index}
                       selected={selected?.id === episode.id}
+                      locale={locale}
                       onClick={() => {
                         setSelected(episode);
                         setAnalysis(null);
@@ -274,11 +455,8 @@ export function Explorer() {
               ) : (
                 <div className="empty-state">
                   <span>∿</span>
-                  <h3>No clear acceleration found</h3>
-                  <p>
-                    This repository’s history does not contain a statistically
-                    strong growth episode under the current detector.
-                  </p>
+                  <h3>{t.noAcceleration}</h3>
+                  <p>{t.noAccelerationBody}</p>
                 </div>
               )}
             </section>
@@ -287,15 +465,16 @@ export function Explorer() {
               {analyzing && selected ? (
                 <AnalysisLoading
                   episode={selected}
-                  message={analysisSteps[analysisStep]}
+                  message={analysisSteps[locale][analysisStep]}
+                  locale={locale}
                 />
               ) : error ? (
                 <div className="inline-investigation-error" role="alert">
-                  <span>Investigation stopped</span>
-                  <h2>The Git evidence could not be loaded.</h2>
+                  <span>{t.investigationStopped}</span>
+                  <h2>{t.evidenceLoadFailed}</h2>
                   <p>{error}</p>
                   <button type="button" onClick={() => void investigate()}>
-                    Try again
+                    {t.tryAgain}
                   </button>
                 </div>
               ) : analysis && selected ? (
@@ -303,19 +482,16 @@ export function Explorer() {
                   analysis={analysis}
                   repository={result.repository}
                   episode={selected}
+                  locale={locale}
                 />
               ) : (
                 <div className="report-placeholder">
                   <span className="report-placeholder-mark" aria-hidden="true">
                     ↗
                   </span>
-                  <p className="kicker">Git investigation</p>
-                  <h2>Investigate directly from the chart.</h2>
-                  <p>
-                    Hover over a blue growth band, then run its Git
-                    investigation. The evidence report will appear here beside
-                    the episode ranking.
-                  </p>
+                  <p className="kicker">{t.gitInvestigation}</p>
+                  <h2>{t.investigateChart}</h2>
+                  <p>{t.investigateChartBody}</p>
                 </div>
               )}
             </section>
@@ -324,22 +500,26 @@ export function Explorer() {
       )}
 
       <section className="principle-strip">
-        <p>Git evidence, not a causal claim.</p>
-        <div>
-          GitHighlights explains what changed near growth. It can also conclude
-          that the repository contains no meaningful explanation.
-        </div>
+        <p>{t.principle}</p>
+        <div>{t.principleBody}</div>
       </section>
 
       <footer>
         <span>GitHighlights</span>
-        <span>Built for curious maintainers and open-source observers.</span>
+        <span>{t.footer}</span>
       </footer>
     </main>
   );
 }
 
-function RepositoryHeader({ repository }: { repository: RepositorySummary }) {
+function RepositoryHeader({
+  repository,
+  locale,
+}: {
+  repository: RepositorySummary;
+  locale: Locale;
+}) {
+  const t = copy[locale];
   return (
     <div className="repo-header">
       <div className="repo-identity">
@@ -350,25 +530,25 @@ function RepositoryHeader({ repository }: { repository: RepositorySummary }) {
             {repository.fullName}
             <span aria-hidden="true">↗</span>
           </a>
-          <p>{repository.description || "No repository description provided."}</p>
+          <p>{repository.description || t.noDescription}</p>
         </div>
       </div>
       <dl className="repo-stats">
         <div>
-          <dt>Stars</dt>
-          <dd>{formatCompact(repository.stars)}</dd>
+          <dt>{t.stars}</dt>
+          <dd>{formatCompact(repository.stars, locale)}</dd>
         </div>
         <div>
-          <dt>Forks</dt>
-          <dd>{formatCompact(repository.forks)}</dd>
+          <dt>{t.forks}</dt>
+          <dd>{formatCompact(repository.forks, locale)}</dd>
         </div>
         <div>
-          <dt>Language</dt>
-          <dd>{repository.language || "Mixed"}</dd>
+          <dt>{t.language}</dt>
+          <dd>{repository.language || t.mixed}</dd>
         </div>
         <div>
-          <dt>Last push</dt>
-          <dd>{relativeDate(repository.pushedAt)}</dd>
+          <dt>{t.lastPush}</dt>
+          <dd>{relativeDate(repository.pushedAt, locale)}</dd>
         </div>
       </dl>
     </div>
@@ -381,6 +561,7 @@ function GrowthChart({
   selected,
   analyzing,
   analysisStep,
+  locale,
   onSelect,
   onInvestigate,
 }: {
@@ -389,9 +570,11 @@ function GrowthChart({
   selected: GrowthEpisode | null;
   analyzing: boolean;
   analysisStep: number;
+  locale: Locale;
   onSelect: (episode: GrowthEpisode) => void;
   onInvestigate: (episode: GrowthEpisode) => void;
 }) {
+  const t = copy[locale];
   const [hovered, setHovered] = useState<GrowthEpisode | null>(null);
   const width = 1000;
   const height = 330;
@@ -445,7 +628,11 @@ function GrowthChart({
         className="growth-chart"
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label={`Star history from ${history[0]?.date} to ${history.at(-1)?.date}, with ${episodes.length} detected growth episodes`}
+        aria-label={
+          locale === "zh"
+            ? `从 ${history[0]?.date} 到 ${history.at(-1)?.date} 的 Star 历史，共检测到 ${episodes.length} 个增长事件`
+            : `Star history from ${history[0]?.date} to ${history.at(-1)?.date}, with ${episodes.length} detected growth episodes`
+        }
       >
         {gridValues.map((fraction) => {
           const y = top + plotHeight * (1 - fraction);
@@ -453,7 +640,7 @@ function GrowthChart({
             <g key={fraction}>
               <line className="grid-line" x1="0" x2={width} y1={y} y2={y} />
               <text className="grid-label" x="8" y={y - 7}>
-                {formatCompact(maxCount * fraction)}
+                {formatCompact(maxCount * fraction, locale)}
               </text>
             </g>
           );
@@ -480,7 +667,11 @@ function GrowthChart({
               }}
               role="button"
               tabIndex={0}
-              aria-label={`${formatDate(episode.peakDate)} growth episode, ${formatCompact(episode.starsGained)} stars gained. Show Git investigation.`}
+              aria-label={
+                locale === "zh"
+                  ? `${formatDate(episode.peakDate, locale)} 增长事件，新增 ${formatCompact(episode.starsGained, locale)} Stars。查看 Git 调查。`
+                  : `${formatDate(episode.peakDate, locale)} growth episode, ${formatCompact(episode.starsGained, locale)} stars gained. Show Git investigation.`
+              }
             >
               <rect
                 x={x}
@@ -514,16 +705,16 @@ function GrowthChart({
           style={{ left: `${hoveredPercent}%` }}
           aria-live="polite"
         >
-          <span className="popover-kicker">Git investigation</span>
-          <strong className="popover-date">{formatDate(hovered.peakDate)}</strong>
+          <span className="popover-kicker">{t.gitInvestigation}</span>
+          <strong className="popover-date">{formatDate(hovered.peakDate, locale)}</strong>
           <div className="popover-metrics">
             <span>
-              <small>Stars gained</small>
-              <strong>+{formatCompact(hovered.starsGained)}</strong>
+              <small>{t.starsGained}</small>
+              <strong>+{formatCompact(hovered.starsGained, locale)}</strong>
             </span>
             <span>
-              <small>Peak velocity</small>
-              <strong>+{formatCompact(hovered.peakDaily)}/day</strong>
+              <small>{t.peakVelocity}</small>
+              <strong>+{formatCompact(hovered.peakDaily, locale)}{t.perDay}</strong>
             </span>
           </div>
           <button
@@ -536,13 +727,13 @@ function GrowthChart({
           >
             <span>
               {analyzing
-                ? analysisSteps[analysisStep]
-                : "Investigate Git changes"}
+                ? analysisSteps[locale][analysisStep]
+                : t.investigateChanges}
             </span>
             <span aria-hidden="true">{analyzing ? "•••" : "→"}</span>
           </button>
           <small className="popover-note">
-            Reviews the 30 days leading into this episode.
+            {t.reviewWindow}
           </small>
         </aside>
       )}
@@ -554,13 +745,16 @@ function EpisodeButton({
   episode,
   index,
   selected,
+  locale,
   onClick,
 }: {
   episode: GrowthEpisode;
   index: number;
   selected: boolean;
+  locale: Locale;
   onClick: () => void;
 }) {
+  const t = copy[locale];
   return (
     <button
       type="button"
@@ -570,14 +764,14 @@ function EpisodeButton({
     >
       <span className="episode-number">{String(index + 1).padStart(2, "0")}</span>
       <span className="episode-date">
-        <strong>{formatDate(episode.peakDate)}</strong>
+        <strong>{formatDate(episode.peakDate, locale)}</strong>
         <small>
-          baseline {formatCompact(episode.baseline)}/day
+          {t.baseline} {formatCompact(episode.baseline, locale)}{t.perDay}
         </small>
       </span>
       <span className="episode-gain">
-        <strong>+{formatCompact(episode.starsGained)}</strong>
-        <small>stars gained</small>
+        <strong>+{formatCompact(episode.starsGained, locale)}</strong>
+        <small>{t.starsGained}</small>
       </span>
       <span className="episode-arrow" aria-hidden="true">
         →
@@ -589,10 +783,13 @@ function EpisodeButton({
 function AnalysisLoading({
   episode,
   message,
+  locale,
 }: {
   episode: GrowthEpisode;
   message: string;
+  locale: Locale;
 }) {
+  const t = copy[locale];
   return (
     <div className="analysis-loading" role="status">
       <div className="loading-orbit" aria-hidden="true">
@@ -600,12 +797,9 @@ function AnalysisLoading({
         <span />
       </div>
       <div>
-        <p className="kicker">Git investigation · {formatDate(episode.peakDate)}</p>
+        <p className="kicker">{t.gitInvestigation} · {formatDate(episode.peakDate, locale)}</p>
         <h2>{message}</h2>
-        <p>
-          Reviewing commits, releases, changed files, and timing around this
-          growth episode.
-        </p>
+        <p>{t.investigationLoading}</p>
       </div>
     </div>
   );
@@ -615,20 +809,23 @@ function AnalysisReport({
   analysis,
   repository,
   episode,
+  locale,
 }: {
   analysis: AnalysisResult;
   repository: RepositorySummary;
   episode: GrowthEpisode;
+  locale: Locale;
 }) {
+  const t = copy[locale];
   return (
     <section className="report-section" id="evidence-report">
       <div className="report-intro">
         <div>
-          <p className="kicker">Evidence report</p>
+          <p className="kicker">{t.evidenceReport}</p>
           <h2>
-            The Git story around
+            {t.gitStory}
             <br />
-            {formatDate(episode.peakDate)}
+            {formatDate(episode.peakDate, locale)}
           </h2>
         </div>
         <div className="report-meta">
@@ -637,19 +834,19 @@ function AnalysisReport({
           <span>{analysis.window.to}</span>
           <small>
             {analysis.mode === "structured-ai"
-              ? "Structured AI synthesis"
-              : "Deterministic evidence synthesis"}
+              ? t.structuredSynthesis
+              : t.deterministicSynthesis}
           </small>
         </div>
       </div>
 
       <div className="report-stats">
-        <ReportStat value={analysis.stats.commitsReviewed} label="commits scanned" />
-        <ReportStat value={analysis.stats.releasesReviewed} label="releases" />
-        <ReportStat value={analysis.stats.filesChanged} label="files reviewed" />
+        <ReportStat value={analysis.stats.commitsReviewed} label={t.commitsScanned} />
+        <ReportStat value={analysis.stats.releasesReviewed} label={t.releases} />
+        <ReportStat value={analysis.stats.filesChanged} label={t.filesReviewed} />
         <ReportStat
-          value={`+${formatCompact(analysis.stats.additions)} / −${formatCompact(analysis.stats.deletions)}`}
-          label="line movement"
+          value={`+${formatCompact(analysis.stats.additions, locale)} / −${formatCompact(analysis.stats.deletions, locale)}`}
+          label={t.lineMovement}
         />
       </div>
 
@@ -660,6 +857,7 @@ function AnalysisReport({
             finding={finding}
             evidence={analysis.evidence}
             index={index}
+            locale={locale}
           />
         ))}
       </div>
@@ -667,11 +865,11 @@ function AnalysisReport({
       <div className="evidence-ledger">
         <div className="ledger-heading">
           <div>
-            <p className="kicker">Source ledger</p>
-            <h3>Reviewed Git evidence</h3>
+            <p className="kicker">{t.sourceLedger}</p>
+            <h3>{t.reviewedEvidence}</h3>
           </div>
           <a href={repository.htmlUrl} target="_blank" rel="noreferrer">
-            Open repository ↗
+            {t.openRepository}
           </a>
         </div>
         <div className="ledger-list">
@@ -688,12 +886,12 @@ function AnalysisReport({
                 <strong>{item.title}</strong>
                 <small>
                   {item.sha ? `${item.sha} · ` : ""}
-                  {formatDate(item.date)}
+                  {formatDate(item.date, locale)}
                 </small>
               </span>
               <span className="ledger-categories">
                 {item.categories.slice(0, 2).map((category) => (
-                  <i key={category}>{humanize(category)}</i>
+                  <i key={category}>{humanize(category, locale)}</i>
                 ))}
               </span>
               <span aria-hidden="true">↗</span>
@@ -701,7 +899,7 @@ function AnalysisReport({
           ))}
           {analysis.evidence.length === 0 && (
             <div className="ledger-empty">
-              No high-signal Git evidence was found in this window.
+              {t.noEvidence}
             </div>
           )}
         </div>
@@ -714,11 +912,14 @@ function FindingCard({
   finding,
   evidence,
   index,
+  locale,
 }: {
   finding: Finding;
   evidence: AnalysisResult["evidence"];
   index: number;
+  locale: Locale;
 }) {
+  const t = copy[locale];
   const linked = evidence.filter((item) =>
     finding.evidenceIds.includes(item.id),
   );
@@ -726,9 +927,9 @@ function FindingCard({
     <article className={`finding-card ${finding.classification}`}>
       <div className="finding-topline">
         <span>{String(index + 1).padStart(2, "0")}</span>
-        <span className="finding-label">{labelFinding(finding.classification)}</span>
+        <span className="finding-label">{labelFinding(finding.classification, locale)}</span>
         <span className={`confidence ${finding.confidence}`}>
-          {finding.confidence} confidence
+          {labelConfidence(finding.confidence, locale)} {t.confidence}
         </span>
       </div>
       <h3>{finding.title}</h3>
@@ -736,7 +937,7 @@ function FindingCard({
       {finding.categories.length > 0 && (
         <div className="category-tags">
           {finding.categories.map((category) => (
-            <span key={category}>{humanize(category)}</span>
+            <span key={category}>{humanize(category, locale)}</span>
           ))}
         </div>
       )}
@@ -752,7 +953,7 @@ function FindingCard({
       )}
       {finding.limitations[0] && (
         <p className="limitation">
-          <span>Limit</span>
+          <span>{t.limit}</span>
           {finding.limitations[0]}
         </p>
       )}
@@ -769,7 +970,8 @@ function ReportStat({ value, label }: { value: string | number; label: string })
   );
 }
 
-function LoadingPanel() {
+function LoadingPanel({ locale }: { locale: Locale }) {
+  const t = copy[locale];
   return (
     <section className="loading-panel" role="status">
       <div className="loading-orbit" aria-hidden="true">
@@ -777,31 +979,39 @@ function LoadingPanel() {
         <span />
       </div>
       <div>
-        <p className="kicker">Following the curve</p>
-        <h2>Reconstructing star velocity…</h2>
-        <p>Resolving the repository and normalizing its public event history.</p>
+        <p className="kicker">{t.followingCurve}</p>
+        <h2>{t.reconstructing}</h2>
+        <p>{t.resolving}</p>
       </div>
     </section>
   );
 }
 
-const analysisSteps = [
-  "Collecting Git history…",
-  "Reviewing change clusters…",
-  "Weighing evidence…",
-  "Writing report… may take 30s",
-];
+const analysisSteps = {
+  en: [
+    "Collecting Git history…",
+    "Reviewing change clusters…",
+    "Weighing evidence…",
+    "Writing report… may take 30s",
+  ],
+  zh: [
+    "正在收集 Git 历史…",
+    "正在检查变化集群…",
+    "正在评估证据…",
+    "正在撰写报告…可能需要 30 秒",
+  ],
+} as const;
 
-function formatCompact(value: number): string {
-  return new Intl.NumberFormat("en-US", {
+function formatCompact(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale === "zh" ? "zh-CN" : "en-US", {
     notation: value >= 1_000 ? "compact" : "standard",
     maximumFractionDigits: value >= 1_000 ? 1 : 0,
   }).format(value);
 }
 
-function formatDate(value?: string): string {
+function formatDate(value: string | undefined, locale: Locale): string {
   if (!value) return "—";
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale === "zh" ? "zh-CN" : "en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -809,33 +1019,65 @@ function formatDate(value?: string): string {
   }).format(new Date(`${value.slice(0, 10)}T12:00:00Z`));
 }
 
-function formatTime(value: string): string {
-  return new Intl.DateTimeFormat("en-US", {
+function formatTime(value: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === "zh" ? "zh-CN" : "en-US", {
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date(value));
 }
 
-function relativeDate(value: string): string {
+function relativeDate(value: string, locale: Locale): string {
+  const t = copy[locale];
   const days = Math.max(
     0,
     Math.floor((Date.now() - new Date(value).getTime()) / 86_400_000),
   );
-  if (days === 0) return "today";
-  if (days === 1) return "yesterday";
-  if (days < 30) return `${days}d ago`;
-  return formatDate(value);
+  if (days === 0) return t.today;
+  if (days === 1) return t.yesterday;
+  if (days < 30) {
+    return locale === "zh" ? `${days} ${t.daysAgo}` : `${days}${t.daysAgo}`;
+  }
+  return formatDate(value, locale);
 }
 
-function labelFinding(value: Finding["classification"]): string {
-  return {
-    likely_enabling_change: "Likely enabling change",
-    possible_contributor: "Possible contributor",
-    coincident_change: "Coincident change",
-    no_git_evidence: "No Git evidence",
-  }[value];
+function labelFinding(
+  value: Finding["classification"],
+  locale: Locale,
+): string {
+  const labels = {
+    en: {
+      likely_enabling_change: "Likely enabling change",
+      possible_contributor: "Possible contributor",
+      coincident_change: "Coincident change",
+      no_git_evidence: "No Git evidence",
+    },
+    zh: {
+      likely_enabling_change: "可能的促进变化",
+      possible_contributor: "可能的影响因素",
+      coincident_change: "同期变化",
+      no_git_evidence: "无 Git 证据",
+    },
+  } as const;
+  return labels[locale][value];
 }
 
-function humanize(value: string): string {
-  return value.replace(/_/g, " ");
+function labelConfidence(value: Finding["confidence"], locale: Locale): string {
+  if (locale === "en") return value;
+  return { high: "高", medium: "中", low: "低" }[value];
+}
+
+function humanize(value: string, locale: Locale): string {
+  if (locale === "en") return value.replace(/_/g, " ");
+  const labels: Record<string, string> = {
+    capability: "产品能力",
+    onboarding: "上手体验",
+    api_cli: "API / CLI",
+    architecture: "架构",
+    performance: "性能",
+    compatibility: "兼容性",
+    documentation: "文档",
+    distribution: "分发",
+    maintenance: "维护",
+  };
+  return labels[value] ?? value.replace(/_/g, " ");
 }

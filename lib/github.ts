@@ -126,6 +126,7 @@ async function fetchStarHistoryRange(
 export async function analyzeGitWindow(
   repository: RepositorySummary,
   episode: GrowthEpisode,
+  locale: "en" | "zh" = "en",
 ): Promise<AnalysisResult> {
   const spikeStart = new Date(`${episode.start}T00:00:00Z`);
   const spikeEnd = new Date(`${episode.end}T23:59:59Z`);
@@ -172,8 +173,14 @@ export async function analyzeGitWindow(
   const evidence = [...releaseEvidence, ...commitEvidence].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
-  const findings = buildFindings(evidence, episode);
-  const aiFindings = await enhanceWithAI(repository, episode, findings, evidence);
+  const findings = buildFindings(evidence, episode, locale);
+  const aiFindings = await enhanceWithAI(
+    repository,
+    episode,
+    findings,
+    evidence,
+    locale,
+  );
   const allFiles = new Set(commitEvidence.flatMap((item) => item.files ?? []));
 
   return {
@@ -409,7 +416,11 @@ function categorize(message: string, files: string[]): ChangeCategory[] {
   return categories.size > 0 ? [...categories] : ["maintenance"];
 }
 
-function buildFindings(evidence: Evidence[], episode: GrowthEpisode): Finding[] {
+function buildFindings(
+  evidence: Evidence[],
+  episode: GrowthEpisode,
+  locale: "en" | "zh",
+): Finding[] {
   const releases = evidence.filter((item) => item.kind === "release");
   const commits = evidence.filter((item) => item.kind === "commit");
   const userFacing = new Set<ChangeCategory>([
@@ -430,13 +441,22 @@ function buildFindings(evidence: Evidence[], episode: GrowthEpisode): Finding[] 
     const release = releases[0];
     findings.push({
       classification: "possible_contributor",
-      title: `A release framed the changes: ${release.title}`,
+      title:
+        locale === "zh"
+          ? `一次发布集中呈现了这些变化：${release.title}`
+          : `A release framed the changes: ${release.title}`,
       explanation:
-        "A published release falls inside the adaptive pre-spike window. Releases can make accumulated work easier to understand and adopt, but timing alone cannot establish that it caused the growth.",
+        locale === "zh"
+          ? "一个已发布版本落在增长前的自适应分析窗口内。发布版本可能让累积的工作更容易被理解和采用，但仅凭时间关系不能证明它导致了增长。"
+          : "A published release falls inside the adaptive pre-spike window. Releases can make accumulated work easier to understand and adopt, but timing alone cannot establish that it caused the growth.",
       categories: release.categories,
       confidence: "medium",
       evidenceIds: [release.id],
-      limitations: ["Repository evidence does not show how new visitors discovered the release."],
+      limitations: [
+        locale === "zh"
+          ? "仓库证据无法说明新访客是如何发现该版本的。"
+          : "Repository evidence does not show how new visitors discovered the release.",
+      ],
     });
   }
 
@@ -464,13 +484,18 @@ function buildFindings(evidence: Evidence[], episode: GrowthEpisode): Finding[] 
         : "possible_contributor";
     findings.push({
       classification,
-      title: categoryTitle(category),
-      explanation: `${items.length} high-signal change${items.length === 1 ? "" : "s"} in this theme landed near the growth episode${churn > 0 ? `, touching roughly ${formatNumber(churn)} changed lines across the reviewed commits` : ""}. The sequence is consistent with an enabling change, while the star chart alone cannot prove causality.`,
+      title: categoryTitle(category, locale),
+      explanation:
+        locale === "zh"
+          ? `该主题有 ${items.length} 项高价值变化发生在增长事件附近${churn > 0 ? `，已检查的提交共涉及约 ${formatNumber(churn, locale)} 行代码变化` : ""}。这一变化顺序与促进增长的因素相符，但仅凭 Star 曲线无法证明因果关系。`
+          : `${items.length} high-signal change${items.length === 1 ? "" : "s"} in this theme landed near the growth episode${churn > 0 ? `, touching roughly ${formatNumber(churn, locale)} changed lines across the reviewed commits` : ""}. The sequence is consistent with an enabling change, while the star chart alone cannot prove causality.`,
       categories: [category],
       confidence: classification === "likely_enabling_change" ? "medium" : "low",
       evidenceIds: items.slice(0, 5).map((item) => item.id),
       limitations: [
-        "Only the default branch and published releases are analyzed in this version.",
+        locale === "zh"
+          ? "当前版本仅分析默认分支和已发布版本。"
+          : "Only the default branch and published releases are analyzed in this version.",
       ],
     });
   }
@@ -478,14 +503,21 @@ function buildFindings(evidence: Evidence[], episode: GrowthEpisode): Finding[] 
   if (findings.length === 0) {
     findings.push({
       classification: "no_git_evidence",
-      title: "No meaningful Git change aligns with this episode",
+      title:
+        locale === "zh"
+          ? "没有与该事件相符的显著 Git 变化"
+          : "No meaningful Git change aligns with this episode",
       explanation:
-        "The reviewed window contains no strong user-facing commit or release signal. The growth should not be attributed to repository changes without additional evidence.",
+        locale === "zh"
+          ? "检查窗口内没有发现面向用户的显著提交或发布信号。在获得更多证据前，不应将这次增长归因于仓库变化。"
+          : "The reviewed window contains no strong user-facing commit or release signal. The growth should not be attributed to repository changes without additional evidence.",
       categories: [],
       confidence: "high",
       evidenceIds: [],
       limitations: [
-        "External discovery and private development activity are outside this analysis.",
+        locale === "zh"
+          ? "外部传播和私有开发活动不在本次分析范围内。"
+          : "External discovery and private development activity are outside this analysis.",
       ],
     });
   }
@@ -498,6 +530,7 @@ async function enhanceWithAI(
   episode: GrowthEpisode,
   fallback: Finding[],
   evidence: Evidence[],
+  locale: "en" | "zh",
 ): Promise<Finding[] | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey || evidence.length === 0) return null;
@@ -582,7 +615,7 @@ async function enhanceWithAI(
           {
             role: "system",
             content:
-              "You analyze whether repository changes plausibly enabled GitHub star growth. Use only supplied evidence. Never claim causality. Prefer no_git_evidence when support is weak. Every claim must cite evidence IDs.",
+              `You analyze whether repository changes plausibly enabled GitHub star growth. Use only supplied evidence. Never claim causality. Prefer no_git_evidence when support is weak. Every claim must cite evidence IDs. Write every title, explanation, and limitation in ${locale === "zh" ? "Simplified Chinese" : "English"}.`,
           },
           {
             role: "user",
@@ -622,19 +655,35 @@ async function enhanceWithAI(
   }
 }
 
-function categoryTitle(category: ChangeCategory): string {
-  const titles: Record<ChangeCategory, string> = {
-    capability: "New capabilities expanded what the project could do",
-    onboarding: "Adoption became easier",
-    api_cli: "The public interface became more useful",
-    architecture: "The project’s structure changed substantially",
-    performance: "Performance work improved the experience",
-    compatibility: "The project reached more environments",
-    documentation: "The project became easier to understand",
-    distribution: "Packaging and delivery improved",
-    maintenance: "Maintenance activity occurred nearby",
+function categoryTitle(
+  category: ChangeCategory,
+  locale: "en" | "zh",
+): string {
+  const titles: Record<"en" | "zh", Record<ChangeCategory, string>> = {
+    en: {
+      capability: "New capabilities expanded what the project could do",
+      onboarding: "Adoption became easier",
+      api_cli: "The public interface became more useful",
+      architecture: "The project’s structure changed substantially",
+      performance: "Performance work improved the experience",
+      compatibility: "The project reached more environments",
+      documentation: "The project became easier to understand",
+      distribution: "Packaging and delivery improved",
+      maintenance: "Maintenance activity occurred nearby",
+    },
+    zh: {
+      capability: "新功能扩展了项目能力",
+      onboarding: "项目变得更容易上手",
+      api_cli: "公开接口变得更实用",
+      architecture: "项目结构发生了显著变化",
+      performance: "性能改进提升了使用体验",
+      compatibility: "项目支持了更多运行环境",
+      documentation: "项目变得更容易理解",
+      distribution: "打包与交付方式得到改进",
+      maintenance: "附近时间段出现了维护活动",
+    },
   };
-  return titles[category];
+  return titles[locale][category];
 }
 
 function firstLine(value: string): string {
@@ -645,8 +694,10 @@ function cleanText(value: string): string {
   return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function formatNumber(value: number): string {
-  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
+function formatNumber(value: number, locale: "en" | "zh"): string {
+  return new Intl.NumberFormat(locale === "zh" ? "zh-CN" : "en-US", {
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
 function shiftDays(date: Date, days: number): Date {
