@@ -2,6 +2,8 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
+[在线体验](https://wsmykm3.github.io/gitHighlights/)
+
 > 读懂增长曲线背后的代码变化。
 
 GitHighlights 是一款面向公开仓库的增长洞察工具，它把 GitHub Star 的异常增长事件与此前发生的提交、发布版本联系起来，帮助维护者、贡献者和开发者从“仓库何时开始加速增长”进一步理解“这个时间点附近发生了什么变化”，同时避免把相关性误认为因果关系。

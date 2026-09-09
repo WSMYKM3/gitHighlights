@@ -2,6 +2,8 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
+[Live Demo](https://wsmykm3.github.io/gitHighlights/)
+
 > Read the code behind the curve.
 
 GitHighlights is a public-repository intelligence tool that connects unusual
