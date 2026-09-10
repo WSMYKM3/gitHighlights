@@ -7,15 +7,8 @@
       name="description"
       content="GitHighlights connects GitHub star-growth episodes with the code changes behind them."
     />
-    <meta
-      http-equiv="refresh"
-      content="0; url=https://git-highlights.spiffy-zebra-7931.chatgpt.site"
-    />
-    <link
-      rel="canonical"
-      href="https://git-highlights.spiffy-zebra-7931.chatgpt.site"
-    />
-    <title>GitHighlights — Opening the live app</title>
+    <link rel="canonical" href="https://wsmykm3.github.io/gitHighlights/" />
+    <title>GitHighlights — Read the code behind the curve</title>
     <style>
       :root {
         color: #111b2e;
@@ -25,14 +18,15 @@
       }
 
       body {
-        display: grid;
-        min-height: 100vh;
         margin: 0;
-        place-items: center;
+        overflow: hidden;
       }
 
-      main {
-        width: min(34rem, calc(100% - 3rem));
+      .loading {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
         text-align: center;
       }
 
@@ -63,7 +57,7 @@
         line-height: 1.7;
       }
 
-      a {
+      .loading a {
         display: inline-block;
         margin-top: 1rem;
         padding: 0.85rem 1.1rem;
@@ -73,15 +67,19 @@
         font-weight: 750;
         text-decoration: none;
       }
+
+      iframe {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #f4f1ea;
+      }
     </style>
-    <script>
-      window.location.replace(
-        "https://git-highlights.spiffy-zebra-7931.chatgpt.site",
-      );
-    </script>
   </head>
   <body>
-    <main>
+    <main class="loading">
       <div class="mark" aria-hidden="true">GH</div>
       <h1>Opening GitHighlights…</h1>
       <p>正在打开 GitHighlights 在线应用…</p>
@@ -89,5 +87,10 @@
         Continue / 继续
       </a>
     </main>
+    <iframe
+      src="https://git-highlights.spiffy-zebra-7931.chatgpt.site"
+      title="GitHighlights application"
+      allow="clipboard-write"
+    ></iframe>
   </body>
 </html>
